@@ -137,7 +137,7 @@ int maze(void)
 		doUTurn (&positionZhonx);
 		HAL_Delay (2000);
 	}while (false
-			== miniWayFind (&maze, posXStart, posYStart,
+			== miniwayFind (&maze, posXStart, posYStart,
 					zhonxSettings.x_finish_maze, zhonxSettings.y_finish_maze));
 	run1 (&maze, &positionZhonx, posXStart, posYStart);
 	run2 (&maze, &positionZhonx, posXStart, posYStart);
@@ -277,7 +277,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 			positionZhonx->x = way->x;
 			positionZhonx->y = way->y;
 			oldDote = way;
-			way = oldDote->next;
+			way = oldDote->next; // todo : see why when oldDote->next = 0x0 way will not take 0x0 but 0x63d010
 			free (oldDote);
 			if(way == NULL)
 			{
@@ -372,6 +372,7 @@ void newDot(coordinate **old_dot, int x, int y)
 	else
 	{
 		(*old_dot) = (coordinate*) calloc_s (1, sizeof(coordinate));
+		(*old_dot)->previous = NULL;
 	}
 	(*old_dot)->x = x;
 	(*old_dot)->y = y;
@@ -823,7 +824,7 @@ void clearMazelength(labyrinthe* maze)
 	}
 }
 
-char miniWayFind(labyrinthe *maze, char xStart, char yStart, char xFinish,
+char miniwayFind(labyrinthe *maze, char xStart, char yStart, char xFinish,
 		char yFinish)
 {
 	// TODO not find the shorter in distance way but the faster
@@ -843,7 +844,7 @@ char miniWayFind(labyrinthe *maze, char xStart, char yStart, char xFinish,
 	printMaze(*maze,-1,-1);
 	moveVirtualZhonx (*maze, position, &way2, xFinish, yFinish);
 	ssd1306ClearScreen ();
-	char waySame = diffWay (way1, way2);
+	char waySame = diffway (way1, way2);
 	switch (waySame)
 	{
 		case true :
@@ -853,14 +854,14 @@ char miniWayFind(labyrinthe *maze, char xStart, char yStart, char xFinish,
 			ssd1306DrawString (0, 20, "2 way = : no", &Font_5x8);
 			break;
 	}
-	deleteWay (way1);
-	deleteWay (way2);
+	deleteway (way1);
+	deleteway (way2);
 	ssd1306Refresh ();
 	HAL_Delay (3000);
 	return (waySame);
 }
 
-char diffWay(coordinate *way1, coordinate *way2)
+char diffway(coordinate *way1, coordinate *way2)
 {
 	while (way1 != NULL && way2 != NULL)
 	{
@@ -878,7 +879,7 @@ char diffWay(coordinate *way1, coordinate *way2)
 	return true;
 }
 
-void deleteWay(coordinate *way) // TODO: verify the function
+void deleteway(coordinate *way) // TODO: verify the function
 {
 	while (way != NULL)
 	{

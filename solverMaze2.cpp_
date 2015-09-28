@@ -132,7 +132,7 @@ int maze(void)
 #endif // codeblocks
 		HAL_Delay (2000);
 	}while (false
-			== miniWayFind (&maze, posXStart, posYStart,
+			== miniwayFind (&maze, posXStart, posYStart,
 					zhonxSettings.x_finish_maze, zhonxSettings.y_finish_maze));
 	waitStart ();
 	run1 (&maze, &positionZhonx, posXStart, posYStart);
@@ -807,7 +807,7 @@ void clearMazelength(labyrinthe* maze)
 	}
 }
 
-char miniWayFind(labyrinthe *maze, char xStart, char yStart, char xFinish,
+char miniwayFind(labyrinthe *maze, char xStart, char yStart, char xFinish,
 		char yFinish)
 {
 	// TODO trouver non pas le chemin le plus court mais le chemin le plus rapide
@@ -822,7 +822,7 @@ char miniWayFind(labyrinthe *maze, char xStart, char yStart, char xFinish,
 	moveVirtualZhonx (*maze, (positionRobot ) { true, xStart, yStart, NORTH },
 			way2, xFinish, yFinish);
 	//ssd1306ClearScreen ();
-	char waySame = diffWay (way1, way2);
+	char waySame = diffway (way1, way2);
 	switch (waySame)
 	{
 		case true :
@@ -832,14 +832,14 @@ char miniWayFind(labyrinthe *maze, char xStart, char yStart, char xFinish,
 			//ssd1306DrawString (0, 20, "2 way = : no", &Font_5x8);
 			break;
 	}
-	deleteWay (way1);
-	deleteWay (way2);
+	deleteway (way1);
+	deleteway (way2);
 	//ssd1306Refresh ();
 	HAL_Delay (3000);
 	return (waySame);
 }
 
-char diffWay(coordinate *way1, coordinate *way2)
+char diffway(coordinate *way1, coordinate *way2)
 {
 	while (way1 != NULL && way2 != NULL)
 	{
@@ -857,7 +857,7 @@ char diffWay(coordinate *way1, coordinate *way2)
 	return true;
 }
 
-void deleteWay(coordinate *way) // TODO: verify the function
+void deleteway(coordinate *way) // TODO: verify the function
 {
 	while (way != NULL)
 	{

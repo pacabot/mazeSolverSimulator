@@ -94,9 +94,9 @@ void* calloc_s (size_t nombre, size_t taille);
 void printMaze(const labyrinthe maze, const int x_robot, const int y_robot);
 void printLength(const labyrinthe maze,const int x_robot, const int y_robot);
 void clearMazelength(labyrinthe* maze);
-char miniWayFind(labyrinthe *maze,char xStart, char yStart, char xFinish, char yFinish);
+char miniwayFind(labyrinthe *maze,char xStart, char yStart, char xFinish, char yFinish);
 void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate *way);
 void waitStart(void);
-char diffWay(coordinate *way1,coordinate *way2);
-void deleteWay(coordinate *way);
+char diffway(coordinate *way1,coordinate *way2);
+void deleteway(coordinate *way);
 #endif /* RESOLUTION_MAZE_H_ */
