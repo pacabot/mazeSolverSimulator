@@ -69,7 +69,7 @@ void run1(labyrinthe *maze, positionRobot *positionZhonx, char posXStart, char p
 void run2(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
 		char posYStart)
 {
-	coordinate *way = NULL;
+	coordinate way[MAZE_SIZE*MAZE_SIZE];
 	char choice;
 	do
 	{
@@ -78,9 +78,9 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
 		poids(maze,zhonxSettings.x_finish_maze, zhonxSettings.y_finish_maze, true);
 		printMaze(*maze,positionZhonx->x, positionZhonx->y);
 		waitStart ();
-		moveVirtualZhonx (*maze, *positionZhonx, &way,
+		moveVirtualZhonx (*maze, *positionZhonx, way,
 				zhonxSettings.x_finish_maze, zhonxSettings.y_finish_maze);
-		moveRealZhonxArc (maze, positionZhonx, &way);
+		moveRealZhonxArc (maze, positionZhonx, way);
 //		if (zhonxSettings.calibration_enabled == true)
 //			calibrateSimple ();
 		HAL_Delay (2000);

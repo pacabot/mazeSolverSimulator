@@ -9,7 +9,7 @@
 #define SETTING_H_
 /* dependencies */
 #define codeblocks
-#define HAL_Delay(x)
+#define HAL_Delay SDL_Delay
 #define multiplicateur 5
 #define debug
 

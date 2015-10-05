@@ -147,7 +147,7 @@ int maze(void)
 void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 		char yFinish)
 {
-	coordinate *way = NULL;
+	coordinate way[MAZE_SIZE*MAZE_SIZE] = {0};
 	motorsSleepDriver (OFF);
 	telemetersStart();
 	HAL_Delay(1000);
@@ -158,9 +158,8 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 	{
 		clearMazelength (maze);
 		poids (maze, xFinish, yFinish, true);
-		moveVirtualZhonx (*maze, *positionZhonx, &way, xFinish, yFinish);
-		goToTheBeginOfTheChainList(&way);
-		moveRealZhonxArc (maze, positionZhonx, &way);//, &xFinish, &yFinish);
+		moveVirtualZhonx (*maze, *positionZhonx, way, xFinish, yFinish);
+		moveRealZhonxArc (maze, positionZhonx, way);//, &xFinish, &yFinish);
 	}
 	telemetersStop();
 	HAL_Delay (200);
@@ -171,8 +170,9 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 
 
 void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
-		coordinate **way, char xFinish, char yFinish)
+		coordinate way[], char xFinish, char yFinish)
 {
+	int i=0;
 	while (positionZhonxVirtuel.x != xFinish
 			|| positionZhonxVirtuel.y != yFinish)
 	{
@@ -194,8 +194,9 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 		}
 		else
 		{
-			if ((*way)!=NULL ) //&& (*way)->previous != NULL)
+			if (i != 0)
 			{
+				way[i].x = END_OF_LIST, way[i].y = END_OF_LIST;
 				return;
 			}
 			else
@@ -212,45 +213,47 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 
 		printMaze(maze,positionZhonxVirtuel.x,positionZhonxVirtuel.y);
 		ssd1306Refresh ();
-		newDot (way, positionZhonxVirtuel.x, positionZhonxVirtuel.y);
+		way[i].x = positionZhonxVirtuel.x, way[i].y = positionZhonxVirtuel.y;
+		i++;
 	}
+	way[i].x = END_OF_LIST, way[i].y = END_OF_LIST;
 	return;
 }
 
 
-void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate **way)
+void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate way[])
 {
 	walls cell_state;
 	char endMidCase;
 	char chain;
-	coordinate *oldDote;
 	int length;
+	int i = 0;
 	char additionY = 0;
 	char additionX = 0;
 	char orientaionToGo = NORTH;
-	while ((*way) != NULL)
+	while (way[i].x != END_OF_LIST)
 	{
 		length = 0;
-		if ((*way)->x == (positionZhonx->x + 1) && (*way)->y == positionZhonx->y)
+		if (way[i].x == (positionZhonx->x + 1) && way[i].y == positionZhonx->y)
 		{
 			additionX = 1;
 			additionY = 0;
 			orientaionToGo = EAST;
 		}
-		else if ((*way)->x == (positionZhonx->x - 1) && (*way)->y == positionZhonx->y)
+		else if (way[i].x == (positionZhonx->x - 1) && way[i].y == positionZhonx->y)
 		{
 			additionX = -1;
 			additionY = 0;
 			orientaionToGo = WEST;
 		}
-		else if ((*way)->y == (positionZhonx->y - 1) && (*way)->x == positionZhonx->x)
+		else if (way[i].y == (positionZhonx->y - 1) && way[i].x == positionZhonx->x)
 		{
 
 			additionX = 0;
 			additionY = -1;
 			orientaionToGo = NORTH;
 		}
-		else if ((*way)->y == (positionZhonx->y + 1) && (*way)->x == positionZhonx->x)
+		else if (way[i].y == (positionZhonx->y + 1) && way[i].x == positionZhonx->x)
 		{
 
 			additionX = 0;
@@ -259,7 +262,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 		}
 		else
 		{
-			bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",positionZhonx->x,positionZhonx->y, (*way)->x, (*way)->y);
+			bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",positionZhonx->x,positionZhonx->y, way[i].x, way[i].y);
 			HAL_Delay (200);
 			motorsSleepDriver (ON);
 			ssd1306DrawString (60, 0, "Error way", &Font_5x8);
@@ -270,19 +273,13 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 			}
 		}
 
-		while (((*way) != NULL) && (*way)->y == (positionZhonx->y + additionY)
-				&& (*way)->x == positionZhonx->x + additionX)
+		while ((way[i].x != END_OF_LIST) && way[i].y == (positionZhonx->y + additionY)
+				&& way[i].x == positionZhonx->x + additionX)
 		{
+			positionZhonx->x = way[i].x;
+			positionZhonx->y = way[i].y;
+			i++;
 			length++;
-			positionZhonx->x = (*way)->x;
-			positionZhonx->y = (*way)->y;
-			oldDote = (*way);
-			(*way) = oldDote->next;
-			free (oldDote);
-			if(way == NULL)
-			{
-				break;
-			}
 		}
 		if ((positionZhonx->x != 8 || positionZhonx->y != 8) )
 			endMidCase = false;
@@ -301,33 +298,37 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 
 
 
-void poids(labyrinthe *maze, int xFinish, int yfinish, char wallNoKnow)
+void poids(labyrinthe *maze, int xFinish, int yFinish, char wallNoKnow)
 {
+	int i1 = 0, i2 = 0 ;
 	int length = 0;
 	int x = xFinish;
-	int y = yfinish;
+	int y = yFinish;
 	maze->cell[x][y].length = length;
-	coordinate *dotes_to_verifie = NULL;
-	newDot (&dotes_to_verifie, x, y);
-	coordinate *new_dotes_to_verifie = NULL;
+	coordinate dotes_to_verifie_tab [MAZE_SIZE*MAZE_SIZE];
+	dotes_to_verifie_tab[0].x = x;
+	dotes_to_verifie_tab[0].y = y;
+	dotes_to_verifie_tab[1].x = END_OF_LIST;
+	coordinate new_dotes_to_verifie_tab [MAZE_SIZE*MAZE_SIZE];
+	coordinate *dotes_to_verifie = dotes_to_verifie_tab;
+	coordinate *new_dotes_to_verifie = new_dotes_to_verifie_tab;
 	coordinate *pt = NULL;
 
-	while (dotes_to_verifie != NULL)
+	while (dotes_to_verifie[0].x != END_OF_LIST)
 	{
 		length++;
-		while (dotes_to_verifie != NULL)
+		while (dotes_to_verifie[i1].x != END_OF_LIST)
 		{
-			x = dotes_to_verifie->x;
-			y = dotes_to_verifie->y;
-			pt = dotes_to_verifie->previous;
-			free (dotes_to_verifie);
-			dotes_to_verifie = pt;
+			x = dotes_to_verifie[i1].x;
+			y = dotes_to_verifie[i1].y;
 			if ((maze->cell[x][y].wall_north == NO_WALL
 					|| (wallNoKnow == true
 							&& maze->cell[x][y].wall_north == NO_KNOWN))
 					&& maze->cell[x][y - 1].length > length - 1 && y > 0)
 			{
-				newDot (&new_dotes_to_verifie, x, y - 1);
+				new_dotes_to_verifie[i2].x = x;
+				new_dotes_to_verifie[i2].y = y-1;
+				i2++;
 				maze->cell[x][y - 1].length = length;
 			}
 			if ((maze->cell[x][y].wall_east == NO_WALL
@@ -335,7 +336,9 @@ void poids(labyrinthe *maze, int xFinish, int yfinish, char wallNoKnow)
 							&& maze->cell[x][y].wall_east == NO_KNOWN))
 					&& maze->cell[x + 1][y].length > length&& x+1<MAZE_SIZE)
 			{
-				newDot (&new_dotes_to_verifie, x + 1, y);
+				new_dotes_to_verifie[i2].x = x+1;
+				new_dotes_to_verifie[i2].y = y;
+				i2++;
 				maze->cell[x + 1][y].length = length;
 			}
 			if ((maze->cell[x][y].wall_south == NO_WALL
@@ -343,7 +346,9 @@ void poids(labyrinthe *maze, int xFinish, int yfinish, char wallNoKnow)
 							&& maze->cell[x][y].wall_south == NO_KNOWN))
 					&& maze->cell[x][y + 1].length > length&& y+1<MAZE_SIZE)
 			{
-				newDot (&new_dotes_to_verifie, x, y + 1);
+				new_dotes_to_verifie[i2].x = x;
+				new_dotes_to_verifie[i2].y = y+1;
+				i2++;
 				maze->cell[x][y + 1].length = length;
 			}
 			if ((maze->cell[x][y].wall_west == NO_WALL
@@ -351,33 +356,40 @@ void poids(labyrinthe *maze, int xFinish, int yfinish, char wallNoKnow)
 							&& maze->cell[x][y].wall_west == NO_KNOWN))
 					&& maze->cell[x - 1][y].length > length && x > 0)
 			{
-				newDot (&new_dotes_to_verifie, x - 1, y);
+				new_dotes_to_verifie[i2].x = x-1;
+				new_dotes_to_verifie[i2].y = y;
+				i2++;
 				maze->cell[x - 1][y].length = length;
 			}
+			i1++;
 		}
+		new_dotes_to_verifie[i2].x = END_OF_LIST;
+		pt = dotes_to_verifie;
 		dotes_to_verifie = new_dotes_to_verifie;
-		new_dotes_to_verifie = NULL;
+		new_dotes_to_verifie = pt;
+		i2=0;
+		i1=0;
 	}
 }
 
-void newDot(coordinate **old_dot, int x, int y)
-{
-	if ((*old_dot) != NULL)
-	{
-		(*old_dot)->next = (coordinate*)calloc_s (1, sizeof(coordinate));
-		coordinate *pt = *old_dot;
-		*old_dot = pt->next;
-		(*old_dot)->previous = pt;
-	}
-	else
-	{
-		(*old_dot) = (coordinate*) calloc_s (1, sizeof(coordinate));
-		(*old_dot)->previous = NULL;
-	}
-	(*old_dot)->x = x;
-	(*old_dot)->y = y;
-	(*old_dot)->next = NULL;
-}
+//void newDot(coordinate **old_dot, int x, int y)
+//{
+//	if ((*old_dot) != NULL)
+//	{
+//		(*old_dot)->next = (coordinate*)calloc_s (1, sizeof(coordinate));
+//		coordinate *pt = *old_dot;
+//		*old_dot = pt->next;
+//		(*old_dot)->previous = pt;
+//	}
+//	else
+//	{
+//		(*old_dot) = (coordinate*) calloc_s (1, sizeof(coordinate));
+//		(*old_dot)->previous = NULL;
+//	}
+//	(*old_dot)->x = x;
+//	(*old_dot)->y = y;
+//	(*old_dot)->next = NULL;
+//}
 void mazeInit(labyrinthe *maze)
 {
 #ifndef test
@@ -828,8 +840,8 @@ char miniwayFind(labyrinthe *maze, char xStart, char yStart, char xFinish,
 		char yFinish)
 {
 	// TODO not find the shorter in distance way but the faster
-	coordinate *way1 = NULL;
-	coordinate *way2 = NULL;
+	coordinate way1[MAZE_SIZE*MAZE_SIZE];
+	coordinate way2[MAZE_SIZE*MAZE_SIZE];
 	clearMazelength (maze);
 	poids (maze, xFinish, yFinish, true);
 	printMaze(*maze,-1,-1);
@@ -838,11 +850,11 @@ char miniwayFind(labyrinthe *maze, char xStart, char yStart, char xFinish,
 	position.x = xStart;
 	position.y = yStart;
 	position.orientation = NORTH;
-	moveVirtualZhonx (*maze, position, &way1, xFinish, yFinish);
+	moveVirtualZhonx (*maze, position, way1, xFinish, yFinish);
 	clearMazelength (maze);
 	poids (maze, xFinish, yFinish, false);
 	printMaze(*maze,-1,-1);
-	moveVirtualZhonx (*maze, position, &way2, xFinish, yFinish);
+	moveVirtualZhonx (*maze, position, way2, xFinish, yFinish);
 	ssd1306ClearScreen ();
 	char waySame = diffway (way1, way2);
 	switch (waySame)
@@ -854,40 +866,27 @@ char miniwayFind(labyrinthe *maze, char xStart, char yStart, char xFinish,
 			ssd1306DrawString (0, 20, "2 way = : no", &Font_5x8);
 			break;
 	}
-	deleteway (way1);
-	deleteway (way2);
 	ssd1306Refresh ();
 	HAL_Delay (3000);
 	return (waySame);
 }
 
-char diffway(coordinate *way1, coordinate *way2)
+char diffway(coordinate way1[], coordinate way2[])
 {
-	while (way1 != NULL && way2 != NULL)
+	int i = 0;
+	while ((way1[i].x != END_OF_LIST) && (way2[i].x != END_OF_LIST))
 	{
-		if (way1->x != way2->x || way1->y != way2->y)
+		if (way1[i].x != way2[i].x || way1[i].y != way2[i].y)
 		{
 			return false;
 		}
-		way1 = way1->previous;
-		way2 = way2->previous;
+		i++;
 	}
-	if (!NAND(way1 ,way2))
+	if (!NAND((way1[i].x != END_OF_LIST),(way2[i].x != END_OF_LIST)))
 	{
 		return false;
 	}
 	return true;
-}
-
-void deleteway(coordinate *way) // TODO: verify the function
-{
-	coordinate *pt;
-	while (way != NULL)
-	{
-		pt = way;
-		way = way->previous;
-		free (pt);
-	}
 }
 
 void waitStart()
@@ -908,12 +907,4 @@ void waitStart()
 //	HAL_Delay(200);
 //	while(check_bit(sensors_state, SENSOR_F10_POS)==false)
 //		sensors_state = hal_sensor_get_state(app_context.sensors);
-}
-int goToTheBeginOfTheChainList (coordinate **way)
-{
-	while (((*way)->previous) != 0)
-	{
-		(*way) = (*way)->previous;
-	}
-	return EXIT_SUCCESS;
 }
