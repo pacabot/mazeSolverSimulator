@@ -80,7 +80,7 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
 		waitStart ();
 		moveVirtualZhonx (*maze, *positionZhonx, &way,
 				zhonxSettings.x_finish_maze, zhonxSettings.y_finish_maze);
-		moveRealZhonxArc (maze, positionZhonx, way);
+		moveRealZhonxArc (maze, positionZhonx, &way);
 //		if (zhonxSettings.calibration_enabled == true)
 //			calibrateSimple ();
 		HAL_Delay (2000);

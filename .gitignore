@@ -1,0 +1,11 @@
+/.setings/
+/.setings/*
+.cproject
+.project
+# Ignorer tous les fichiers intermédiares de construction
+*.o
+*.a
+*.so
+*.orig
+/Debug/
+/Release/

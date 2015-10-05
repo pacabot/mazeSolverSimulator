@@ -8,6 +8,8 @@
 #ifndef RESOLUTION_MAZE_H_
 #define RESOLUTION_MAZE_H_
 
+#define NAND(a,b) (!a && !b)
+
 /* Error codes */
 #define MAZE_SOLVER_E_SUCCESS  0
 #define MAZE_SOLVER_E_ERROR    1
@@ -35,7 +37,7 @@
 #define MAX_SPEED_TRANSLATION   (400)
 #define END_SPEED_TRANSLATION	(400)
 
-#define DEBUG 3
+#define DEBUG 2
 
 #ifdef DEBUG
 #undef END_SPEED_TRANSLATION
@@ -95,8 +97,9 @@ void printMaze(const labyrinthe maze, const int x_robot, const int y_robot);
 void printLength(const labyrinthe maze,const int x_robot, const int y_robot);
 void clearMazelength(labyrinthe* maze);
 char miniwayFind(labyrinthe *maze,char xStart, char yStart, char xFinish, char yFinish);
-void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate *way);
+void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate **way);
 void waitStart(void);
 char diffway(coordinate *way1,coordinate *way2);
 void deleteway(coordinate *way);
+int goToTheBeginOfTheChainList (coordinate **way);
 #endif /* RESOLUTION_MAZE_H_ */

@@ -158,9 +158,9 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 	{
 		clearMazelength (maze);
 		poids (maze, xFinish, yFinish, true);
-		//printLength(*maze, positionZhonx->x, positionZhonx->y);
 		moveVirtualZhonx (*maze, *positionZhonx, &way, xFinish, yFinish);
-		moveRealZhonxArc (maze, positionZhonx, way);//, &xFinish, &yFinish);
+		goToTheBeginOfTheChainList(&way);
+		moveRealZhonxArc (maze, positionZhonx, &way);//, &xFinish, &yFinish);
 	}
 	telemetersStop();
 	HAL_Delay (200);
@@ -218,7 +218,7 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 }
 
 
-void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate *way)
+void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate **way)
 {
 	walls cell_state;
 	char endMidCase;
@@ -228,29 +228,29 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 	char additionY = 0;
 	char additionX = 0;
 	char orientaionToGo = NORTH;
-	while (way != NULL)
+	while ((*way) != NULL)
 	{
 		length = 0;
-		if (way->x == (positionZhonx->x + 1) && way->y == positionZhonx->y)
+		if ((*way)->x == (positionZhonx->x + 1) && (*way)->y == positionZhonx->y)
 		{
 			additionX = 1;
 			additionY = 0;
 			orientaionToGo = EAST;
 		}
-		else if (way->x == (positionZhonx->x - 1) && way->y == positionZhonx->y)
+		else if ((*way)->x == (positionZhonx->x - 1) && (*way)->y == positionZhonx->y)
 		{
 			additionX = -1;
 			additionY = 0;
 			orientaionToGo = WEST;
 		}
-		else if (way->y == (positionZhonx->y - 1) && way->x == positionZhonx->x)
+		else if ((*way)->y == (positionZhonx->y - 1) && (*way)->x == positionZhonx->x)
 		{
 
 			additionX = 0;
 			additionY = -1;
 			orientaionToGo = NORTH;
 		}
-		else if (way->y == (positionZhonx->y + 1) && way->x == positionZhonx->x)
+		else if ((*way)->y == (positionZhonx->y + 1) && (*way)->x == positionZhonx->x)
 		{
 
 			additionX = 0;
@@ -259,7 +259,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 		}
 		else
 		{
-			bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",positionZhonx->x,positionZhonx->y, way->x, way->y);
+			bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",positionZhonx->x,positionZhonx->y, (*way)->x, (*way)->y);
 			HAL_Delay (200);
 			motorsSleepDriver (ON);
 			ssd1306DrawString (60, 0, "Error way", &Font_5x8);
@@ -270,14 +270,14 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 			}
 		}
 
-		while ((way != NULL) && way->y == (positionZhonx->y + additionY)
-				&& way->x == positionZhonx->x + additionX)
+		while (((*way) != NULL) && (*way)->y == (positionZhonx->y + additionY)
+				&& (*way)->x == positionZhonx->x + additionX)
 		{
 			length++;
-			positionZhonx->x = way->x;
-			positionZhonx->y = way->y;
-			oldDote = way;
-			way = oldDote->next; // todo : see why when oldDote->next = 0x0 way will not take 0x0 but 0x63d010
+			positionZhonx->x = (*way)->x;
+			positionZhonx->y = (*way)->y;
+			oldDote = (*way);
+			(*way) = oldDote->next;
 			free (oldDote);
 			if(way == NULL)
 			{
@@ -366,7 +366,7 @@ void newDot(coordinate **old_dot, int x, int y)
 	{
 		(*old_dot)->next = (coordinate*)calloc_s (1, sizeof(coordinate));
 		coordinate *pt = *old_dot;
-		*old_dot = (*old_dot)->next;
+		*old_dot = pt->next;
 		(*old_dot)->previous = pt;
 	}
 	else
@@ -869,10 +869,10 @@ char diffway(coordinate *way1, coordinate *way2)
 		{
 			return false;
 		}
-		way1 = way1->next;
-		way2 = way2->next;
+		way1 = way1->previous;
+		way2 = way2->previous;
 	}
-	if (way1 == NULL || way2 == NULL)
+	if (!NAND(way1 ,way2))
 	{
 		return false;
 	}
@@ -881,10 +881,12 @@ char diffway(coordinate *way1, coordinate *way2)
 
 void deleteway(coordinate *way) // TODO: verify the function
 {
+	coordinate *pt;
 	while (way != NULL)
 	{
-		way = way->next;
-		free (way->previous);
+		pt = way;
+		way = way->previous;
+		free (pt);
 	}
 }
 
@@ -893,7 +895,7 @@ void waitStart()
 	ssd1306ClearRect(SSD1306_LCDWIDTH/2,0,SSD1306_LCDWIDTH/2,SSD1306_LCDHEIGHT);
 	ssd1306Printf(SSD1306_LCDWIDTH/2,0,&Font_5x8,"wait start");
 	ssd1306Refresh();
-	while (expanderJoyFiltered() != JOY_RIGHT)
+	//while (expanderJoyFiltered() != JOY_RIGHT)
 	{
 		HAL_Delay (20);
 	}
@@ -906,4 +908,12 @@ void waitStart()
 //	HAL_Delay(200);
 //	while(check_bit(sensors_state, SENSOR_F10_POS)==false)
 //		sensors_state = hal_sensor_get_state(app_context.sensors);
+}
+int goToTheBeginOfTheChainList (coordinate **way)
+{
+	while (((*way)->previous) != 0)
+	{
+		(*way) = (*way)->previous;
+	}
+	return EXIT_SUCCESS;
 }

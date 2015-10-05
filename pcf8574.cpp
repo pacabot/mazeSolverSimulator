@@ -39,6 +39,8 @@ char expanderJoyFiltered(void)
             case SDLK_LEFT:
                 return JOY_LEFT;
                 break;
+            default :
+            	break;
         }
         break;
         default :
