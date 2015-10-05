@@ -73,8 +73,8 @@ typedef struct coordinate
 {
   int x;
   int y;
-  struct coordinate *next;
-  struct coordinate *previous;
+//  struct coordinate *next;
+//  struct coordinate *previous;
 }coordinate;
 typedef struct
 {
