@@ -73,13 +73,10 @@ typedef struct coordinate
 {
   int x;
   int y;
-//  struct coordinate *next;
-//  struct coordinate *previous;
 }coordinate;
 typedef struct
 {
-    char x;
-    char y;
+    coordinate cordinate;// todo renplace x and y by coordinate
     char orientation;
     char midOfCell;
 } positionRobot;
@@ -87,16 +84,16 @@ typedef struct
 
 // fonctions
 extern int maze(void);
-void exploration(labyrinthe *maze, positionRobot* poitionZhonx,char xFinish, char yFinish);
+void exploration(labyrinthe *maze, positionRobot* positionZhonx,  coordinate end_coordinate);
 void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
-		coordinate way[], char xFinish, char yFinish);
-void poids(labyrinthe *maze, int xFinish, int yfinish, char wallNoKnow);
+		coordinate way[], coordinate end_coordinate);
+void poids(labyrinthe *maze, coordinate end_coordinate, char wallNoKnow);
 void mazeInit (labyrinthe *maze);
 void* calloc_s (size_t nombre, size_t taille);
-void printMaze(const labyrinthe maze, const int x_robot, const int y_robot);
+void printMaze(const labyrinthe maze, coordinate robot_coordinate);
 void printLength(const labyrinthe maze,const int x_robot, const int y_robot);
 void clearMazelength(labyrinthe* maze);
-char miniwayFind(labyrinthe *maze,char xStart, char yStart, char xFinish, char yFinish);
+char miniwayFind(labyrinthe *maze, coordinate start_coordinate, coordinate end_coordinate);
 void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate way[]);
 void waitStart(void);
 char diffway(coordinate *way1,coordinate *way2);

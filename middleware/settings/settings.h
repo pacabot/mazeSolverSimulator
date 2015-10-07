@@ -17,15 +17,14 @@
 #define SETTING_MODULE_E_SUCCESS    0
 #define SETTING_MODULE_E_ERROR	    1
 
-/* memory address */
+#include <solverMaze.h>
 
 /* structure of settings */
 typedef struct
 {
 	char calibration_enabled;
 	char color_sensor_enabled;
-	int x_finish_maze;
-	int y_finish_maze;
+	coordinate maze_end_coordinate;
 	unsigned long threshold_color;
 	unsigned long threshold_greater;
 }settings;
