@@ -76,7 +76,7 @@ typedef struct coordinate
 }coordinate;
 typedef struct
 {
-    coordinate cordinate;// todo renplace x and y by coordinate
+    coordinate cordinate;
     char orientation;
     char midOfCell;
 } positionRobot;
