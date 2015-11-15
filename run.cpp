@@ -31,18 +31,17 @@
 #endif // codebloc
 void run1(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordinate, coordinate end_coordinate)
 {
+	coordinate way[MAZE_SIZE*MAZE_SIZE];
 	char choice;
 	do
 	{
 		choice = -1;
+		clearMazelength(maze);
+		poids(maze, end_coordinate, false);
+		moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
 		waitStart ();
-		exploration (maze, positionZhonx, end_coordinate);
-//		if (zhonxSettings.calibration_enabled == true)
-//			calibrateSimple ();
-		HAL_Delay (2000);
-		exploration (maze, positionZhonx, start_oordinate);
-//		if (zhonxSettings.calibration_enabled == true)
-//			calibrateSimple ();
+		moveRealZhonxArc(maze, positionZhonx, way);
+		goToPosition(maze,positionZhonx,start_oordinate);
 		doUTurn (positionZhonx);
 
 		ssd1306ClearScreen ();
@@ -80,7 +79,7 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordi
 //		if (zhonxSettings.calibration_enabled == true)
 //			calibrateSimple ();
 		HAL_Delay (2000);
-		exploration (maze, positionZhonx, start_oordinate);
+		//exploration (maze, positionZhonx, start_oordinate);
 //		if (zhonxSettings.calibration_enabled == true)
 //			calibrateSimple ();
 		doUTurn (positionZhonx);

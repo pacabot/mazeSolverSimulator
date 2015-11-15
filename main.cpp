@@ -21,7 +21,7 @@ void pause ()
 
 int main ( int argc, char** argv )
 {
-	zhonxSettings.maze_end_coordinate.x=8;
+ 	zhonxSettings.maze_end_coordinate.x=8;
 	zhonxSettings.maze_end_coordinate.y=8;
 	zhonxSettings.color_sensor_enabled=false;
 

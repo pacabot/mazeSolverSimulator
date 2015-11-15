@@ -18,6 +18,9 @@
 
 #define MAZE_SIZE 16
 
+//definition for numerotation function
+#define CANT_GO 1023
+
 //orientation define
 #define NORTH 0
 #define EAST 1
@@ -84,8 +87,9 @@ typedef struct
 
 // fonctions
 extern int maze(void);
-void exploration(labyrinthe *maze, positionRobot* positionZhonx,  coordinate end_coordinate);
-void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
+void exploration(labyrinthe *maze, positionRobot* positionZhonx,  coordinate *end_coordinate, coordinate start_coordinate);
+int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,  coordinate end_coordinate);
+int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 		coordinate way[], coordinate end_coordinate);
 void poids(labyrinthe *maze, coordinate end_coordinate, char wallNoKnow);
 void mazeInit (labyrinthe *maze);
@@ -96,5 +100,7 @@ void clearMazelength(labyrinthe* maze);
 char miniwayFind(labyrinthe *maze, coordinate start_coordinate, coordinate end_coordinate);
 void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate way[]);
 void waitStart(void);
-char diffway(coordinate *way1,coordinate *way2);
+char diffway(coordinate way1[], coordinate way2[]);
+coordinate findEndCoordinate (coordinate coordinate_tab[]);
+int findArrival (labyrinthe maze, coordinate *end_coordinate);
 #endif /* RESOLUTION_MAZE_H_ */
