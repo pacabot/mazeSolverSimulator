@@ -16,7 +16,7 @@
 
 //Define for the maze
 
-#define MAZE_SIZE 16
+#define MAZE_SIZE 17
 
 //definition for numerotation function
 #define CANT_GO 1023

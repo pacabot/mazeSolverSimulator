@@ -53,7 +53,7 @@
 #undef END_SPEED_TRANSLATION
 #define END_SPEED_TRANSLATION 0
 #endif
-
+// TODO : change maze size
 int maze(void)
 {
 	coordinate start_coordinate, end_coordinate; // it's the coordinates which Zhonx have at the start
@@ -78,7 +78,7 @@ int maze(void)
 
 	positionZhonx.cordinate.x = 8;
 	positionZhonx.cordinate.y = 8; // the robot start in the corner
-	positionZhonx.orientation = EAST;
+	positionZhonx.orientation = NORTH;
 	/*end of initialization for different micromouse competition*/
 	positionZhonx.midOfCell = true;
 	start_coordinate.x = positionZhonx.cordinate.x;
