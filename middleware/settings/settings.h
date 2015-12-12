@@ -8,7 +8,7 @@
 #ifndef SETTING_H_
 #define SETTING_H_
 /* dependencies */
-#define codeblocks
+#define simulator
 #define HAL_Delay SDL_Delay
 #define multiplicateur 5
 #define debug

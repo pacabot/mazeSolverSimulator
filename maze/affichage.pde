@@ -173,6 +173,7 @@ void action_bouton()
 }
 void open_file()
 {
+  file_path=null;
   // cette fonction permet de selactioner un fichier dans l'arborécence de l'ordinateur puis de le charger en mémoire
   selectInput("Select a file to process:", "fileSelected"); // on ouvre la fenaitre de selection du fichier
   while (file_select==false)//on attend que la fenaitre soit refermer
@@ -180,9 +181,10 @@ void open_file()
     delay(10);
   }
   file_select=false;
-  if (fichier!=null /*&& fichier.endsWith(".zhonxIIImaze")*/)//on test si l'utilisateur n'a pas fermer la fenaitre de selection et si le fichier fini par ".zhonxIIImaze"
+  if (file_path!=null && file_path.endsWith(".zhonxIIImaze"))//on test si l'utilisateur n'a pas fermer la fenaitre de selection et si le fichier fini par ".zhonxIIImaze"
   {
-    in_maze = loadStrings(fichier); // on charge dans la variable in maze le fichier
+    files_name=files_name.substring(15, files_name.indexOf(".zhonxIIImaze"));
+    in_maze = loadStrings(file_path); // on charge dans la variable in maze le fichier
     if (in_maze.length>NOMBER_OF_WALL) // on verifie que le labyrinthe du fichier peut rentrer dans le tableau "maze"
     {
       background(255);
@@ -217,15 +219,16 @@ void fileSelected(File selection)
     println("Window was closed or the user hit cancel.");
     //exit();
   } else {
-    fichier = selection.getAbsolutePath();
-    println("User selected " + fichier);
+    file_path = selection.getAbsolutePath();
+    files_name = selection.getName();
+    println("User selected " + file_path);
   }
 }
-void export_maze(int nom)
+void export_maze(int name)
 {
   print("save maze");
   PrintWriter out_maze_user;
-  out_maze_user = createWriter("user.txt");
+  out_maze_user = createWriter("mazes/user" + files_name + ".txt");
   //for(int i=0; i<=
   for(int y=0; y<=NOMBER_OF_WALL;y++)
   {
@@ -261,8 +264,8 @@ void export_maze(int nom)
   out_maze_user.close(); // Finish the file
   
   PrintWriter out_maze_zhonx_c;
-  out_maze_zhonx_c = createWriter("zhonx c.txt");
-  out_maze_zhonx_c.print("{{");
+  out_maze_zhonx_c = createWriter("mazes/maze" + files_name + ".c");
+  out_maze_zhonx_c.print("/*\n* this is an otomaticaly generated file\n*/\nlabyrinthe maze_to_discovert = {{");
   for (int a=0; a<NOMBER_OF_WALL; a++)
   {
     out_maze_zhonx_c.print("{");
@@ -308,7 +311,7 @@ void export_maze(int nom)
     }
     out_maze_zhonx_c.print("},");
   }
-  out_maze_zhonx_c.print("}}");
+  out_maze_zhonx_c.print("}};");
   out_maze_zhonx_c.println();
   out_maze_zhonx_c.flush();
   out_maze_zhonx_c.close();
@@ -316,7 +319,7 @@ void export_maze(int nom)
 
   PrintWriter out_maze_processing;
   int a,b;
-  out_maze_processing = createWriter("processing_maze.zhonx"); //<>//
+  out_maze_processing = createWriter("mazes/processing_maze" + files_name + ".zhonxIIImaze"); //<>//
   for (a=0; a<NOMBER_OF_WALL; a++)
   {
     for (b=0; b<NOMBER_OF_WALL; b++)
@@ -327,7 +330,6 @@ void export_maze(int nom)
       {
         out_maze_processing.print("w");
       }
-      //print("\t");
     }
     out_maze_processing.println(); //<>//
   }

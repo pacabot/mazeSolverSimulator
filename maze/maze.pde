@@ -12,7 +12,8 @@ Serial Zhonx;  // Create object from Serial class
 
 
 String[] in_maze;
-String fichier=null;
+String file_path=null;
+String files_name=null;
 boolean file_select=false;
 boolean Serial_actif=false;
 boolean old_frame=false;
@@ -23,6 +24,7 @@ int oriantation_zhonx=0;
 
 void setup()
 {
+  files_name= year() + " " + month() + " " + day();
   noSmooth();
   noStroke();
   size(678, 718);

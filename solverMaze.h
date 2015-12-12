@@ -16,7 +16,7 @@
 
 //Define for the maze
 
-#define MAZE_SIZE 17
+#define MAZE_SIZE 18
 
 //definition for numerotation function
 #define CANT_GO 1023
@@ -66,7 +66,6 @@ typedef struct
 
 typedef struct
 {
-	char next_front;
 	char front;
 	char left;
 	char right;
@@ -87,14 +86,14 @@ typedef struct
 
 // fonctions
 extern int maze(void);
-void exploration(labyrinthe *maze, positionRobot* positionZhonx,  coordinate *end_coordinate, coordinate start_coordinate);
+void exploration(labyrinthe *maze, positionRobot* positionZhonx,  coordinate *end_coordinate);
 int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,  coordinate end_coordinate);
 int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 		coordinate way[], coordinate end_coordinate);
-void poids(labyrinthe *maze, coordinate end_coordinate, char wallNoKnow);
+void poids(labyrinthe *maze, coordinate end_coordinate, char wallNoKnow, char contournKnownCell);
 void mazeInit (labyrinthe *maze);
 void* calloc_s (size_t nombre, size_t taille);
-void printMaze(const labyrinthe maze, coordinate robot_coordinate);
+void printMaze(labyrinthe maze, coordinate robot_coordinate);
 void printLength(const labyrinthe maze,const int x_robot, const int y_robot);
 void clearMazelength(labyrinthe* maze);
 char miniwayFind(labyrinthe *maze, coordinate start_coordinate, coordinate end_coordinate);

@@ -7,7 +7,7 @@
 
 #include "middleware/settings/settings.h"
 
-#ifndef codeblocks
+#ifndef simulator
 
 /* peripherale inlcudes*/
 #include "peripherals/motors/motors.h"
@@ -28,7 +28,7 @@
 #include "robotInterface.h"
 #include "ssd1306.h"
 #include "pcf8574.h"
-#endif // codebloc
+#endif // simulator
 void run1(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordinate, coordinate end_coordinate)
 {
 	coordinate way[MAZE_SIZE*MAZE_SIZE];
@@ -37,7 +37,7 @@ void run1(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordi
 	{
 		choice = -1;
 		clearMazelength(maze);
-		poids(maze, end_coordinate, false);
+		poids(maze, end_coordinate, false, false);
 		moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
 		waitStart ();
 		moveRealZhonxArc(maze, positionZhonx, way);
@@ -71,7 +71,7 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordi
 	{
 		choice = -1;
 		clearMazelength(maze);
-		poids(maze,zhonxSettings.maze_end_coordinate, true);
+		poids(maze,zhonxSettings.maze_end_coordinate, false, false);
 		printMaze(*maze,positionZhonx->cordinate);
 		waitStart ();
 		moveVirtualZhonx (*maze, *positionZhonx, way, end_coordinate);
