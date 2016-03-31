@@ -2,7 +2,7 @@ final int WIDTH_COTE=30;
 final int NOMBER_OF_WALL=17;
 final int HAUTEUR_LABYRINTHE = NOMBER_OF_WALL*WIDTH_COTE+4*(NOMBER_OF_WALL+1);
 
-int [][][][] maze = new int[2][NOMBER_OF_WALL+2][NOMBER_OF_WALL+2][2]; //stoque le maze, dans la premiere case est stoquer les passages du robot et dans la 2ème case le maze
+int [][][][] maze = new int[2][NOMBER_OF_WALL+1][NOMBER_OF_WALL+1][2]; //stoque le maze, dans la premiere case est stoquer les passages du robot et dans la 2ème case le maze
 int number_of_the_maze=1;
 
 import java.io.FilenameFilter;
@@ -27,7 +27,8 @@ void setup()
   files_name= year() + " " + month() + " " + day();
   noSmooth();
   noStroke();
-  size(678, 718);
+  size(620, 800);
+  //frame.setResizable(true);
   poussoirs = new donnees_poussoir[0];
   new donnees_poussoir("exit", 10, 10, WIDTH_COTE*2.5, HAUTEUR_LABYRINTHE+70, false);
   new donnees_poussoir("screen\nshoot", 10, 10, WIDTH_COTE*5, HAUTEUR_LABYRINTHE+70, true);
@@ -36,6 +37,10 @@ void setup()
   new donnees_poussoir("", 10, 10, WIDTH_COTE*10, HAUTEUR_LABYRINTHE+55, false);
   new donnees_poussoir("open\nmaze", 10, 10, WIDTH_COTE*12.5, HAUTEUR_LABYRINTHE+70, true);
   new donnees_poussoir("open\nserial", 10, 10, WIDTH_COTE*15, HAUTEUR_LABYRINTHE+70, false);
+  new donnees_poussoir("push up", 10, 10,  WIDTH_COTE*10, HAUTEUR_LABYRINTHE+120, true);
+  new donnees_poussoir("push left", 10, 10,  WIDTH_COTE*10 - 30, HAUTEUR_LABYRINTHE+150, true);
+  new donnees_poussoir("push right", 10, 10,  WIDTH_COTE*10 + 30, HAUTEUR_LABYRINTHE+150, true);
+  new donnees_poussoir("push left", 10, 10,  WIDTH_COTE*10, HAUTEUR_LABYRINTHE+180, true);
   frameRate(5);
 
   for (int a=0; a<NOMBER_OF_WALL; a++)

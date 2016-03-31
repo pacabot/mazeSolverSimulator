@@ -8,10 +8,11 @@
 #ifndef SETTING_H_
 #define SETTING_H_
 /* dependencies */
-#define simulator
+#define SIMULATOR
 #define HAL_Delay SDL_Delay
 #define multiplicateur 5
 #define debug
+#define MAIN_AREA
 
 /* Error codes */
 #define SETTING_MODULE_E_SUCCESS    0
@@ -24,6 +25,8 @@ typedef struct
 {
 	char calibration_enabled;
 	char color_sensor_enabled;
+	int cell_cost;
+	int wall_know_cost;
 	coordinate maze_end_coordinate;
 	unsigned long threshold_color;
 	unsigned long threshold_greater;

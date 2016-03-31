@@ -20,6 +20,9 @@
 #define SSD1306_LCDHEIGHT                 (64)
 #define SSD1306_LCDPAGEHEIGHT             (8)   //8 lines per page
 
+#define LINE_SPACING                    10
+#define HEAD_MARGIN                     11
+
 // Commands
 #define SSD1306_SETCONTRAST               0x81
 #define SSD1306_DISPLAYALLON_RESUME       0xA4
@@ -68,4 +71,6 @@ void ssd1306InvertArea(unsigned char x, unsigned char y, unsigned char w, unsign
 void ssd1306DrawDashedLine(unsigned char x0, unsigned char y0, unsigned char x1, unsigned char y1);
 void ssd1306DrawLine(unsigned char x0, unsigned char y0, unsigned char x1, unsigned char y1);
 void ssd1306ProgressBar(unsigned char x, unsigned char y, unsigned char state);
+void ssd1306DrawStringAtLine(unsigned int x, unsigned int line, const char *text, const FONT_DEF *font);
+void ssd1306PrintfAtLine(int x, int line, const FONT_DEF *font, const char *format, ...);
 #endif

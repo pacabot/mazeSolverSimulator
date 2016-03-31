@@ -227,3 +227,56 @@ void clearMazePoid ()
     }
   }
 }
+ void move_maze(int x, int y)
+ {
+   int xi = 0, xmax = NOMBER_OF_WALL, xmin = 0, xdepart = 0, xsigne = 1; //<>//
+   int yi = 0, ymax = NOMBER_OF_WALL, ymin = 0, ydepart = 0, ysigne = 1;
+   if (x == -1)
+   {
+     xdepart = NOMBER_OF_WALL;
+     xsigne = -1;
+     xmin = 1;
+     xmax = NOMBER_OF_WALL + 1;
+   }
+   else if (x == 0)
+   {
+     xdepart = 0;
+     xmin = -1;
+     xmax = NOMBER_OF_WALL + 1;
+   }
+   else
+   {
+     xdepart=0;
+     xmin = -1;
+     xmax = NOMBER_OF_WALL;
+   }
+   if (y == -1)
+   {
+     ysigne = -1;
+     ydepart= NOMBER_OF_WALL;
+     ymin = 0;
+     ymax = NOMBER_OF_WALL + 1;
+   }
+   else if (y == 0)
+   {
+     ydepart=0;
+     ymin = -1;
+     ymax = NOMBER_OF_WALL + 1;
+   }
+   else
+   {
+     ydepart=0;
+     ymin = -1;
+     ymax = NOMBER_OF_WALL;
+   }
+   println("x " + x + " y " + y + " xi " + xi+ " yi " + yi + " xmax " + xmax + " ymax " + ymax + " xmin " + xmin + " ymin " + ymin + " signe x " + xsigne + " signe y " + ysigne); //<>//
+   for (xi = xdepart; xi> xmin && xi < xmax; xi+= xsigne)
+   {
+     for (yi =ydepart; yi > ymin &&  yi < ymax; yi+= ysigne) //<>//
+     {
+       println("x " + x + " y " + y + " xi " + xi+ " yi " + yi + " xmax " + xmax + " ymax " + ymax);
+       maze [1][xi][yi][0]=maze [1][xi + x][yi + y][0];
+       maze [1][xi][yi][1]=maze [1][xi + x][yi + y][1];
+     } //<>//
+   }
+ }

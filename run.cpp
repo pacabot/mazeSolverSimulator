@@ -5,9 +5,9 @@
  *      Author: Colin
  */
 
-#include "middleware/settings/settings.h"
+#include "settings.h"
 
-#ifndef simulator
+#ifdef ZHONX3
 
 /* peripherale inlcudes*/
 #include "peripherals/motors/motors.h"
@@ -21,7 +21,7 @@
 #include "application/solverMaze/solverMaze.h"
 #include "application/solverMaze/robotInterface.h"
 #include "application/solverMaze/run.h"
-#else
+#elif defined SIMULATOR
 #include "SDL/SDL.h"
 #include "solverMaze.h"
 #include "robotInterface.h"

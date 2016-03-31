@@ -170,6 +170,22 @@ void action_bouton()
   {
     exit();
   }
+  if (poussoirs[7].etat==true)
+  {
+   move_maze(0,-1);
+  }
+  if (poussoirs[8].etat==true)
+  {
+   move_maze(-1,0);
+  }
+  if (poussoirs[9].etat==true)
+  {
+   move_maze(1,0);
+  }
+  if (poussoirs[10].etat==true)
+  {
+   move_maze(0,1);
+  }
 }
 void open_file()
 {
@@ -183,7 +199,13 @@ void open_file()
   file_select=false;
   if (file_path!=null && file_path.endsWith(".zhonxIIImaze"))//on test si l'utilisateur n'a pas fermer la fenaitre de selection et si le fichier fini par ".zhonxIIImaze"
   {
-    files_name=files_name.substring(15, files_name.indexOf(".zhonxIIImaze"));
+    int index=0, new_index=0;
+    while (new_index != -1)
+    {
+      index = new_index;
+      new_index = files_name.indexOf("/", index);
+    }
+    files_name=files_name.substring(index,files_name.indexOf(".zhonxIIImaze"));
     in_maze = loadStrings(file_path); // on charge dans la variable in maze le fichier
     if (in_maze.length>NOMBER_OF_WALL) // on verifie que le labyrinthe du fichier peut rentrer dans le tableau "maze"
     {
@@ -226,10 +248,10 @@ void fileSelected(File selection)
 }
 void export_maze(int name)
 {
-  print("save maze");
+  println("save maze");
+  println("mazes/" + files_name + ".zhonxIIImaze");
   PrintWriter out_maze_user;
-  out_maze_user = createWriter("mazes/user" + files_name + ".txt");
-  //for(int i=0; i<=
+  out_maze_user = createWriter("mazes/" + files_name + ".txt");
   for(int y=0; y<=NOMBER_OF_WALL;y++)
   {
     for(int x=0; x<=NOMBER_OF_WALL;x++)
@@ -264,7 +286,7 @@ void export_maze(int name)
   out_maze_user.close(); // Finish the file
   
   PrintWriter out_maze_zhonx_c;
-  out_maze_zhonx_c = createWriter("mazes/maze" + files_name + ".c");
+  out_maze_zhonx_c = createWriter("mazes/" + files_name + ".c");
   out_maze_zhonx_c.print("/*\n* this is an otomaticaly generated file\n*/\nlabyrinthe maze_to_discovert = {{");
   for (int a=0; a<NOMBER_OF_WALL; a++)
   {
@@ -319,7 +341,7 @@ void export_maze(int name)
 
   PrintWriter out_maze_processing;
   int a,b;
-  out_maze_processing = createWriter("mazes/processing_maze" + files_name + ".zhonxIIImaze"); //<>//
+  out_maze_processing = createWriter("mazes/" + files_name + ".zhonxIIImaze"); //<>//
   for (a=0; a<NOMBER_OF_WALL; a++)
   {
     for (b=0; b<NOMBER_OF_WALL; b++)

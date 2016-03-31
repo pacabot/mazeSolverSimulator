@@ -1,34 +1,35 @@
 #ifdef __cplusplus
-    #include <cstdlib>
+#include <cstdlib>
 #else
-    #include <stdlib.h>
+#include <stdlib.h>
 #endif
 
 #include <SDL/SDL.h>
-#include "middleware/settings/settings.h"
+#include "settings.h"
 #include "solverMaze.h"
 settings zhonxSettings;
 SDL_Surface* screen;
-void pause ()
+void pause()
 {
     SDL_Event event;
     do
-            {
-            SDL_WaitEvent(&event);
-            }
-    while (event.type!= SDL_KEYDOWN);
+    {
+        SDL_WaitEvent(&event);
+    } while (event.type != SDL_KEYDOWN);
 }
 
-int main ( int argc, char** argv )
+int main(int argc, char** argv)
 {
- 	zhonxSettings.maze_end_coordinate.x=8;
-	zhonxSettings.maze_end_coordinate.y=8;
-	zhonxSettings.color_sensor_enabled=false;
+    zhonxSettings.maze_end_coordinate.x = 8;
+    zhonxSettings.maze_end_coordinate.y = 8;
+    zhonxSettings.color_sensor_enabled = false;
+    zhonxSettings.cell_cost = 5;
+    zhonxSettings.wall_know_cost = 50;
 
     // initialize SDL videolabel
-    if ( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+    if (SDL_Init( SDL_INIT_VIDEO) < 0)
     {
-        printf( "Unable to init SDL: %s\n", SDL_GetError() );
+        printf("Unable to init SDL: %s\n", SDL_GetError());
         return 1;
     }
 
@@ -36,8 +37,9 @@ int main ( int argc, char** argv )
     atexit(SDL_Quit);
 
     // create a new window
-    screen = SDL_SetVideoMode(128*multiplicateur, 64*multiplicateur, 16, SDL_HWSURFACE|SDL_DOUBLEBUF);
-    if ( !screen )
+    screen = SDL_SetVideoMode(128 * multiplicateur, 64 * multiplicateur, 16,
+            SDL_HWSURFACE | SDL_DOUBLEBUF);
+    if (!screen)
     {
         printf("Unable to set 640x480 video: %s\n", SDL_GetError());
         return 1;
@@ -58,7 +60,8 @@ int main ( int argc, char** argv )
     SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 0, 0, 0));
 
     // draw bitmap
-    SDL_SetColorKey(bmp, SDL_SRCCOLORKEY, SDL_MapRGB(bmp->format, 255, 255, 255));
+    SDL_SetColorKey(bmp, SDL_SRCCOLORKEY,
+            SDL_MapRGB(bmp->format, 255, 255, 255));
     SDL_BlitSurface(bmp, 0, screen, &dstrect);
     SDL_FreeSurface(bmp);
     SDL_Flip(screen);

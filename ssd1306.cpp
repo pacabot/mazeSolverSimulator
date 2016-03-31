@@ -11,33 +11,9 @@
     (Adafruit Industries) at: https://github.com/adafruit/SSD1306
  */
 /**************************************************************************/
-/* STM32 hal library declarations
-#include "stm32f4xx_hal.h"
-
-/* General declarations
-#include "config/basetypes.h"
-#include "config/config.h"
-#include "config/errors.h"
-
-#include "stdbool.h"
-#include <arm_math.h>
-#include <math.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdarg.h>
-
-/* Peripheral declarations
-#include "peripherals/display/pictures.h"
-#include "peripherals/display/smallfonts.h"
-#include "peripherals/expander/pcf8574.h"
-
-/* Middleware declarations
-
 /* Declarations for this module */
 #include "ssd1306.h"
-#include "middleware/settings/settings.h"
+#include "settings.h"
 #include <SDL/SDL.h>
 extern SDL_Surface* screen;
 //unsigned char buffer[SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8]= {
@@ -357,6 +333,23 @@ void ssd1306Printf(int x, int y, const struct FONT_DEF *font, const char *format
     ssd1306DrawString(x,y,(char *)buffer, font);
 }
 
+void ssd1306DrawStringAtLine(unsigned int x, unsigned int line, const char *text, const FONT_DEF *font)
+{
+    ssd1306DrawString(x, line * LINE_SPACING + HEAD_MARGIN, text, font);
+}
+
+void ssd1306PrintfAtLine(int x, int line, const FONT_DEF *font, const char *format, ...)
+{
+    int y = line * LINE_SPACING + HEAD_MARGIN;
+    char temp_buffer[43];
+    va_list va_args;
+
+    va_start(va_args, format);
+    vsnprintf(temp_buffer, 43, format, va_args);
+    va_end(va_args);
+
+    ssd1306DrawString(x, y, (char *) temp_buffer, font);
+}
 /**************************************************************************/
 /*!
     @brief  Shifts the contents of the frame buffer up the specified
