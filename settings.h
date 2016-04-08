@@ -30,6 +30,7 @@ typedef struct
 	coordinate maze_end_coordinate;
 	unsigned long threshold_color;
 	unsigned long threshold_greater;
+	int start_orientation;
 }settings;
 extern settings zhonxSettings;
 int settingsInit (void);

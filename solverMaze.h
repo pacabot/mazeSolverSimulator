@@ -36,15 +36,19 @@
 #define WALL_PRESENCE 1
 #define NO_WALL 2
 
+#define NO_END				0
+#define END_FIND			1
+#define POSSIBLE_END_FIND	2
+
 #define MAX_SPEED_ROTATION		(300)
-#define MAX_SPEED_TRANSLATION   (400)
-#define END_SPEED_TRANSLATION	(400)
+#define MAX_SPEED_TRANSLATION   (300)
+#define END_SPEED_TRANSLATION	(300)
 
 #define DEBUG 3
 
 #ifdef DEBUG
-#undef END_SPEED_TRANSLATION
-#define END_SPEED_TRANSLATION 0
+//#undef END_SPEED_TRANSLATION
+//#define END_SPEED_TRANSLATION 10
 #endif
 #define END_OF_LIST 255
 #include <stdlib.h>

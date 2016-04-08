@@ -1,7 +1,7 @@
 /*
  * @file : run.c
  * @author : Colin
- * @version : V 2.0
+ * @version : V 2.1
  * @date : 4 juin 2015
  * @brief : this file contain all maze solver application.
  *            this file need robotInterface.c for make hard interface and need
@@ -14,11 +14,19 @@
 #include <math.h>
 #define SIMULATOR
 
-#ifdef zhonx3
+#ifdef ZHONX3
 
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx.h"
 #include "config/basetypes.h"
+
+/* Middleware declarations */
+#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
+#include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/speedControl.h"
+#include "middleware/controls/mainControl/transfertFunction.h"
 
 /* peripherale inlcudes*/
 #include "peripherals/times_base/times_base.h"
@@ -33,23 +41,22 @@
 #include "middleware/settings/settings.h"
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
-#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
-#include "middleware/controls/mainControl/mainControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/speedControl.h"
-#include "middleware/controls/mainControl/transfertFunction.h"
-
-/*application include */
 #include "application/solverMaze/solverMaze.h"
 #include "application/solverMaze/robotInterface.h"
 #include "application/solverMaze/run.h"
 
-/* extern variables ---------------------------------------------------------*/
-extern I2C_HandleTypeDef hi2c1;
-
 #endif
-#ifdef zhonx2
+#ifdef ZHONX2
+
+#include "stm32f4xx_gpio.h"
+
+#define JOYSTICK_LEFT       GPIOC, GPIO_Pin_8
+#define JOYSTICK_UP         GPIOC, GPIO_Pin_9
+#define JOYSTICK_DOWN       GPIOC, GPIO_Pin_10
+#define JOYSTICK_RIGHT      GPIOC, GPIO_Pin_11
+#define JOYSTICK_PUSH       GPIOC, GPIO_Pin_12
+#define RETURN_BUTTON       GPIOC, GPIO_Pin_13
+
 #include "stm32f4xx.h"
 #include "config/basetypes.h"
 #include "config/config.h"
@@ -77,9 +84,9 @@ extern I2C_HandleTypeDef hi2c1;
 #include "solverMaze.h"
 #include <stdlib.h>
 #ifdef __cplusplus
-#include <cstdlib>
+    #include <cstdlib>
 #else
-#include <stdlib.h>
+    #include <stdlib.h>
 #endif
 #include <SDL/SDL.h>
 #include "run.h"
@@ -101,7 +108,7 @@ extern I2C_HandleTypeDef hi2c1;
 
 int maze(void)
 {
-    ssd1306ClearScreen();
+    ssd1306ClearScreen(MAIN_AREA);
     ssd1306Refresh();
     coordinate end_coordinate; // it's the coordinates which Zhonx have at the start
     labyrinthe maze;
@@ -123,20 +130,20 @@ int maze(void)
 
     zhonx_position.cordinate.x = 8;
     zhonx_position.cordinate.y = 8; // the robot start in the center of the maze
-    zhonx_position.orientation = NORTH;
+    zhonx_position.orientation = zhonxSettings.start_orientation % 4;
     /*end of initialization for nime micromouse competition*/
 
 #if defined ZHONX3 || defined SIMULATOR
     zhonx_position.midOfCell = false;
 #elif defined ZHONX2
-    positionZhonx.midOfCell = true;
+    zhonx_position.midOfCell = true;
 #endif
     memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
 
 #ifdef ZHONX3
     move (0, -CELL_LENGTH/2, 50, 0);
-    while(isEndMove() != true);
-    motorsSleepDriver(ON);
+    while(hasMoveEnded() != true);
+    motorsDriverSleep(ON);
 #endif
     start_position.orientation += 2;
     start_position.orientation = start_position.orientation % 4;
@@ -147,15 +154,14 @@ int maze(void)
     printMaze(maze, zhonx_position.cordinate);
     waitStart();
 #ifdef ZHONX3
-    motorsSleepDriver(OFF);
+    motorsDriverSleep(OFF);
 #elif defined ZHONX2
     hal_step_motor_enable();
 #endif
-    exploration(&maze, &zhonx_position, &start_position, &end_coordinate);
-
+    exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
 #ifdef ZHONX3
     telemetersStart();
-    motorsSleepDriver(OFF);
+    motorsDriverSleep(OFF);
 #endif
 #ifdef ZHONX2
     if (zhonx_settings.calibration_enabled==true)
@@ -170,7 +176,7 @@ int maze(void)
     exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
 #ifdef ZHONX3
     telemetersStop();
-    motorsSleepDriver(ON);
+    motorsDriverSleep(ON);
 #endif
 #ifdef ZHONX2
     if (zhonx_settings.calibration_enabled==true)
@@ -183,15 +189,15 @@ int maze(void)
     HAL_Delay(5000);
 #ifdef ZHONX3
     telemetersStart();
-    motorsSleepDriver(OFF);
+    motorsDriverSleep(OFF);
 #endif
 #ifdef ZHONX2
-    hal_step_motor_ensable();
+    hal_step_motor_enable();
 #endif
     goToPosition(&maze, &zhonx_position, start_position.cordinate);	//goto start position
 #ifdef ZHONX3
     telemetersStart();
-    motorsSleepDriver(OFF);
+    motorsDriverSleep(OFF);
 #endif
 #ifdef ZHONX2
     if (zhonx_settings.calibration_enabled==true)
@@ -202,18 +208,19 @@ int maze(void)
     hal_step_motor_disable();
     hal_os_sleep(5000);
 #endif
+    doUTurn(&zhonx_position);
     waitStart();
 #ifdef ZHONX3
     telemetersStart();
-    motorsSleepDriver(OFF);
+    motorsDriverSleep(OFF);
 #endif
 #ifdef ZHONX2
-    hal_step_motor_ensable();
+    hal_step_motor_enable();
 #endif
     goToPosition(&maze, &zhonx_position, end_coordinate);
 #ifdef ZHONX3
     telemetersStop();
-    motorsSleepDriver(ON);
+    motorsDriverSleep(ON);
 #endif
 #ifdef ZHONX2
     if (zhonx_settings.calibration_enabled==true)
@@ -226,16 +233,16 @@ int maze(void)
     HAL_Delay(2000);
 #ifdef ZHONX3
     telemetersStart();
-    motorsSleepDriver(OFF);
+    motorsDriverSleep(OFF);
 #endif
 #ifdef ZHONX2
-    hal_step_motor_ensable();
+    hal_step_motor_enable();
 #endif
     goToPosition(&maze, &zhonx_position, start_position.cordinate);	//goto start position
     doUTurn(&zhonx_position);					// make 180° for be ready to go
 #ifdef ZHONX3
     telemetersStop();
-    motorsSleepDriver(ON);
+    motorsDriverSleep(ON);
 #endif
 #ifdef ZHONX2
     hal_step_motor_disable();
@@ -244,7 +251,7 @@ int maze(void)
 
 #ifdef ZHONX3
     move (0, -CELL_LENGTH/2, 50, 0);
-    motorsSleepDriver(OFF);
+    motorsDriverSleep(OFF);
 #endif
 #ifdef ZHONX2
     if (zhonx_settings.calibration_enabled==true)
@@ -258,7 +265,7 @@ int maze(void)
     run2(&maze, &zhonx_position, start_position.cordinate, end_coordinate);
 
 #ifdef ZHONX3
-    motorsSleepDriver(OFF);
+    motorsDriverSleep(OFF);
 #endif
 #ifdef ZHONX2
     hal_step_motor_disable();
@@ -288,6 +295,10 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
         rv = moveVirtualZhonx(*maze, *positionZhonx, way, *end_coordinate);
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
+            #ifdef ZHONX3
+                motorsDriverSleep(ON);
+                telemetersStop();
+            #endif
             ssd1306Printf(60, 20, &Font_5x8, "no solution");
             bluetoothPrintf("no solution");
             printMaze(*maze, positionZhonx->cordinate);
@@ -712,7 +723,7 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
 
 void printLength(const labyrinthe maze, const int x_robot, const int y_robot)
 {
-#if DEBUG > 2
+#if DEBUG > 2 && !defined ZHONX2
     bluetoothPrintf("zhonx : %d; %d\n", x_robot, y_robot);
     bluetoothPrintf("  ");
     for (int i = 0; i < MAZE_SIZE; i++)
