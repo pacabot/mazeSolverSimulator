@@ -24,7 +24,7 @@ int main(int argc, char** argv)
     zhonxSettings.maze_end_coordinate.y = 8;
     zhonxSettings.color_sensor_enabled = false;
     zhonxSettings.cell_cost = 5;
-    zhonxSettings.wall_know_cost = 1;
+    zhonxSettings.wall_know_cost = 2;
     zhonxSettings.start_orientation = 0;
 
     // initialize SDL videolabel

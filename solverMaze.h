@@ -70,10 +70,11 @@ typedef struct
 
 typedef struct
 {
-	char front;
-	char left;
-	char right;
-}walls;
+    char next_front;
+    char front;
+    char left;
+    char right;
+} walls;
 
 typedef struct coordinate
 {
@@ -82,7 +83,7 @@ typedef struct coordinate
 }coordinate;
 typedef struct
 {
-    coordinate cordinate;
+    coordinate coordinate_robot;
     char orientation;
     char midOfCell;
 } positionRobot;

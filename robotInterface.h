@@ -11,7 +11,7 @@
 #include "solverMaze.h"
 void goOrientation(char *orientationZhonx, char directionToGo);
 void doUTurn(positionRobot *positionZhonx);
-void moveZhonxArc (int direction_to_go, positionRobot *positionZhonx, int numberOfCase, char end_mid_of_case, char chain);
+void move_zhonx (int direction_to_go, positionRobot *positionZhonx, int numberOfCase, char end_mid_of_case, char chain);
 //int move(float angle, float radius_or_distance, float max_speed, float end_speed);
 int waitValidation(unsigned long timeout);
 void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx);

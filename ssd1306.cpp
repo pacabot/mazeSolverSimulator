@@ -173,7 +173,7 @@ return;
 /**************************************************************************/
 void ssd1306DrawPixel(unsigned char x, unsigned char y)
 {
-    SDL_Surface *pixel = NULL;
+    SDL_Surface *pixel;
     pixel = SDL_CreateRGBSurface(SDL_HWSURFACE, multiplicateur, multiplicateur, 32, 0, 0, 0, 0);
     SDL_Rect position;
     position.x = x*multiplicateur;
