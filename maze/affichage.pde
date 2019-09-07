@@ -35,7 +35,7 @@ void affiche_maze()
           //          stroke(100);
           break;
         case 2: 
-          fill(255);
+          fill(255, 0, 255);
           noStroke();//stroke(255);
           break;
         case 3: 
@@ -60,7 +60,7 @@ void affiche_maze()
           //          stroke(100);
           break;
         case 2: 
-          fill(255);
+          fill(255, 0, 255);
           noStroke();//stroke(255);
           break;
         case 3: 
@@ -83,7 +83,7 @@ void affiche_maze()
         //text(maze[0][x][y][0], 5, 15);
         popMatrix();
       }
-      fill(255, 0, 0);
+      fill(255, 0, 255);
       noStroke();//stroke(255, 0, 0);
       rect(0, 0, 4, 4);
       translate(WIDTH_COTE+4, 0);

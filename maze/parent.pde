@@ -43,4 +43,3 @@ class coordonne_point
     return coordonne[1];
   }
 };
-

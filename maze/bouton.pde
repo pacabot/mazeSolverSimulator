@@ -67,4 +67,3 @@ class donnees_poussoir
     text(nom, pos_x+taille_x/2, pos_y+taille_y);
   }
 }
-

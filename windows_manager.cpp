@@ -1,4 +1,4 @@
-/*
+/* 
  * windows_manager.c
  *
  *  Created on: 8 nov. 2015
@@ -11,10 +11,11 @@
 #include "stdarg.h"
 #include "stdio.h"
 #include "stdlib.h"
-window_typedef *windows_declared[MAX_WINDOWS]={NULL};
+window_typedef *windows_declared[MAX_WINDOWS] = { NULL };
 
 
-int addWindow(window_typedef *window, char* window_pix, char width, char height, char pos_x, char pos_y, char place)
+int addWindow(window_typedef * window, char *window_pix, char width,
+			  char height, char pos_x, char pos_y, char place)
 {
 	int i;
 	window->height = height;
@@ -22,7 +23,7 @@ int addWindow(window_typedef *window, char* window_pix, char width, char height,
 	window->pixels = window_pix;
 	window->pos_x = pos_x;
 	window->pos_y = pos_y;
-	while(windows_declared[i] != NULL)
+	while (windows_declared[i] != NULL)
 	{
 		i++;
 	}
@@ -31,10 +32,11 @@ int addWindow(window_typedef *window, char* window_pix, char width, char height,
 }
 
 // todo refresh
-/*
+/* 
  * private method
  */
-int windowDrawChar(window_typedef *window, unsigned int x, unsigned int y, unsigned char c, const FONT_DEF *font)
+int windowDrawChar(window_typedef * window, unsigned int x, unsigned int y,
+				   unsigned char c, const FONT_DEF * font)
 {
 	int rv;
 	unsigned char col, column[font->u8Width];
@@ -45,15 +47,21 @@ int windowDrawChar(window_typedef *window, unsigned int x, unsigned int y, unsig
 		// Retrieve appropriate columns from font data
 		for (col = 0; col < font->u8Width; col++)
 		{
-			column[col] = font->au8FontTable[((c - 32) * font->u8Width) + col];    // Get first column of appropriate character
+			column[col] = font->au8FontTable[((c - 32) * font->u8Width) + col];	// Get 
+																				// first 
+																				// column 
+																				// of 
+																				// appropriate 
+																				// character
 		}
 	}
 	else
 	{
-		// Requested character is not available in this font ... send a space instead
+		// Requested character is not available in this font ... send a space
+		// instead
 		for (col = 0; col < font->u8Width; col++)
 		{
-			column[col] = 0xFF;    // Send solid space
+			column[col] = 0xFF;	// Send solid space
 		}
 	}
 
@@ -64,8 +72,10 @@ int windowDrawChar(window_typedef *window, unsigned int x, unsigned int y, unsig
 		for (yoffset = 0; yoffset < (font->u8Height + 1); yoffset++)
 		{
 			unsigned char bit = 0x00;
-			bit = (column[xoffset] << (8 - (yoffset + 1)));     // Shift current row bit left
-			bit = (bit >> 7);                                   // Shift current row but right (results in 0x01 for black, and 0x00 for white)
+			bit = (column[xoffset] << (8 - (yoffset + 1)));	// Shift current
+															// row bit left
+			bit = (bit >> 7);	// Shift current row but right (results in
+								// 0x01 for black, and 0x00 for white)
 			if (bit)
 			{
 				rv = windowDrawPixel(window, x + xoffset, y + yoffset);
@@ -76,72 +86,84 @@ int windowDrawChar(window_typedef *window, unsigned int x, unsigned int y, unsig
 	}
 	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
 }
-/*
+
+/* 
  * public method
  */
-int windowDrawPixel(window_typedef* window,unsigned char x, unsigned char y)
+int windowDrawPixel(window_typedef * window, unsigned char x, unsigned char y)
 {
 	if ((x >= window->width) || (y >= window->height))
 		return WINDOWS_MANAGER_DRIVER_E_ERROR_OUT_OF_BUF;
 
-	window->pixels[x+ ((y/8)*window->width) + 1] |= (1 << y%8);
+	window->pixels[x + ((y / 8) * window->width) + 1] |= (1 << y % 8);
 	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
 }
 
-int windowClearPixel(window_typedef* window,unsigned char x, unsigned char y)
+int windowClearPixel(window_typedef * window, unsigned char x, unsigned char y)
 {
 	if ((x >= window->width) || (y >= window->height))
-			return WINDOWS_MANAGER_DRIVER_E_ERROR_OUT_OF_BUF;
+		return WINDOWS_MANAGER_DRIVER_E_ERROR_OUT_OF_BUF;
 
-		window->pixels[x+ ((y/8)*window->width) + 1] &= ~(1 << y%8);
-		return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
+	window->pixels[x + ((y / 8) * window->width) + 1] &= ~(1 << y % 8);
+	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
 }
-int windowInvertPixel(window_typedef* window,unsigned char x, unsigned char y)
+
+int windowInvertPixel(window_typedef * window, unsigned char x,
+					  unsigned char y)
 {
 	if ((x >= window->width) || (y >= window->height))
-				return WINDOWS_MANAGER_DRIVER_E_ERROR_OUT_OF_BUF;
+		return WINDOWS_MANAGER_DRIVER_E_ERROR_OUT_OF_BUF;
 
-	window->pixels[x+ ((y/8)*window->width) + 1] ^= (1 << (y % 8));
+	window->pixels[x + ((y / 8) * window->width) + 1] ^= (1 << (y % 8));
 	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
 }
-int windowClear(window_typedef* window)
+
+int windowClear(window_typedef * window)
 {
-	int number_of_cell = (window->height*window->width)/8;
-	if ((window->height*window->width)%8 != 0)
-		number_of_cell ++;
-	memset(window->pixels,0,number_of_cell);
+	int number_of_cell = (window->height * window->width) / 8;
+	if ((window->height * window->width) % 8 != 0)
+		number_of_cell++;
+	memset(window->pixels, 0, number_of_cell);
 	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
 }
-int windowDrawString(window_typedef* window,unsigned int x, unsigned int y, const char *text, const FONT_DEF *font)
+
+int windowDrawString(window_typedef * window, unsigned int x, unsigned int y,
+					 const char *text, const FONT_DEF * font)
 {
 	int rv;
 	unsigned char l;
 	for (l = 0; l < strlen((const char *)text); l++)
 	{
-		rv = windowDrawChar(window, x + (l * (font->u8Width + 1)), y, text[l], font);
+		rv = windowDrawChar(window, x + (l * (font->u8Width + 1)), y, text[l],
+							font);
 		if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 			return rv;
 	}
 	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
 }
-int windowPrintf(window_typedef* window,int x, int y, const FONT_DEF *font, const char *format, ...)
+
+int windowPrintf(window_typedef * window, int x, int y, const FONT_DEF * font,
+				 const char *format, ...)
 {
 	int rv;
 	char temp_buffer[43];
 	va_list va_args;
 
 	va_start(va_args, format);
-    vsnprintf(temp_buffer, 43, format, va_args);
-    va_end(va_args);
+	vsnprintf(temp_buffer, 43, format, va_args);
+	va_end(va_args);
 
-    rv = windowDrawString(window, x,y,(char *)temp_buffer, font);
-    if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
-    {
-    	return rv;
-    }
+	rv = windowDrawString(window, x, y, (char *)temp_buffer, font);
+	if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
+	{
+		return rv;
+	}
 	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
 }
-int windowDrawBmp(window_typedef* window,const unsigned char *bitmap, unsigned char x, unsigned char y, unsigned char w, unsigned char h)
+
+int windowDrawBmp(window_typedef * window, const unsigned char *bitmap,
+				  unsigned char x, unsigned char y, unsigned char w,
+				  unsigned char h)
 {
 	unsigned char i;
 	unsigned char j;
@@ -164,21 +186,22 @@ int windowDrawBmp(window_typedef* window,const unsigned char *bitmap, unsigned c
 	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
 }
 
-int windowDrawCircle(window_typedef* window,unsigned char x0, unsigned char y0, unsigned char r)
+int windowDrawCircle(window_typedef * window, unsigned char x0,
+					 unsigned char y0, unsigned char r)
 {
 	signed char f = 1 - r;
 	signed char ddF_x = 1;
 	signed char ddF_y = -2 * r;
 	signed char x = 0;
 	signed char y = r;
-	windowDrawPixel(window, x0, y0+r);
-	windowDrawPixel(window, x0, y0-r);
-	windowDrawPixel(window, x0+r, y0);
-	windowDrawPixel(window, x0-r, y0);
+	windowDrawPixel(window, x0, y0 + r);
+	windowDrawPixel(window, x0, y0 - r);
+	windowDrawPixel(window, x0 + r, y0);
+	windowDrawPixel(window, x0 - r, y0);
 
-	while (x<y)
+	while (x < y)
 	{
-		if (f>= 0)
+		if (f >= 0)
 		{
 			y--;
 			ddF_y += 2;
@@ -200,7 +223,9 @@ int windowDrawCircle(window_typedef* window,unsigned char x0, unsigned char y0, 
 	}
 	return 1;
 }
-int windowFillCircle(window_typedef* window,unsigned char x0, unsigned char y0, unsigned char r)
+
+int windowFillCircle(window_typedef * window, unsigned char x0,
+					 unsigned char y0, unsigned char r)
 {
 	int i;
 	int rv;
@@ -210,14 +235,14 @@ int windowFillCircle(window_typedef* window,unsigned char x0, unsigned char y0, 
 	signed char x = 0;
 	signed char y = r;
 
-	for (i=y0-r; i<=y0+r; i++)
+	for (i = y0 - r; i <= y0 + r; i++)
 	{
-		rv =windowDrawPixel(window,x0, i);
+		rv = windowDrawPixel(window, x0, i);
 		if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 			return rv;
 	}
 
-	while (x<y)
+	while (x < y)
 	{
 		if (f >= 0)
 		{
@@ -229,21 +254,21 @@ int windowFillCircle(window_typedef* window,unsigned char x0, unsigned char y0, 
 		ddF_x += 2;
 		f += ddF_x;
 
-		for (i=y0-y; i<=y0+y; i++)
+		for (i = y0 - y; i <= y0 + y; i++)
 		{
-			rv =windowDrawPixel(window,x0+x, i);
+			rv = windowDrawPixel(window, x0 + x, i);
 			if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 				return rv;
-			rv =windowDrawPixel(window,x0-x, i);
+			rv = windowDrawPixel(window, x0 - x, i);
 			if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 				return rv;
 		}
-		for (i=y0-x; i<=y0+x; i++)
+		for (i = y0 - x; i <= y0 + x; i++)
 		{
-			rv =windowDrawPixel(window,x0+y, i);
+			rv = windowDrawPixel(window, x0 + y, i);
 			if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 				return rv;
-			rv =windowDrawPixel(window,x0-y, i);
+			rv = windowDrawPixel(window, x0 - y, i);
 			if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 				return rv;
 		}
@@ -251,7 +276,8 @@ int windowFillCircle(window_typedef* window,unsigned char x0, unsigned char y0, 
 	return 1;
 }
 
-int windowClearCircle(window_typedef* window,unsigned char x0, unsigned char y0, unsigned char r)
+int windowClearCircle(window_typedef * window, unsigned char x0,
+					  unsigned char y0, unsigned char r)
 {
 	int i;
 	signed char f = 1 - r;
@@ -261,14 +287,14 @@ int windowClearCircle(window_typedef* window,unsigned char x0, unsigned char y0,
 	signed char y = r;
 	int rv;
 
-	for (i=y0-r; i<=y0+r; i++)
+	for (i = y0 - r; i <= y0 + r; i++)
 	{
 		rv = windowClearPixel(window, x0, i);
 		if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 			return rv;
 	}
 
-	while (x<y)
+	while (x < y)
 	{
 		if (f >= 0)
 		{
@@ -280,34 +306,21 @@ int windowClearCircle(window_typedef* window,unsigned char x0, unsigned char y0,
 		ddF_x += 2;
 		f += ddF_x;
 
-		for (i=y0-y; i<=y0+y; i++)
+		for (i = y0 - y; i <= y0 + y; i++)
 		{
-			windowClearPixel(window, x0+x, i);
+			windowClearPixel(window, x0 + x, i);
 			if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 				return rv;
-			windowClearPixel(window, x0-x, i);
+			windowClearPixel(window, x0 - x, i);
 			if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 				return rv;
 		}
-		for (i=y0-x; i<=y0+x; i++)
+		for (i = y0 - x; i <= y0 + x; i++)
 		{
-			rv = windowClearPixel(window, x0+y, i);
+			rv = windowClearPixel(window, x0 + y, i);
 			if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 				return rv;
-			rv = windowClearPixel(window, x0-y, i);
-			if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
-				return rv;
-		}
-	}
-	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
-}
-int windowFillRect(window_typedef* window,unsigned char x, unsigned char y, unsigned char w, unsigned char h)
-{
-	int i, j, rv;
-	// stupidest version - just pixels - but fast with internal buffer!
-	for (i=x; i<x+w; i++) {
-		for (j=y; j<y+h; j++) {
-			rv =windowDrawPixel(window,i, j);
+			rv = windowClearPixel(window, x0 - y, i);
 			if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 				return rv;
 		}
@@ -315,7 +328,25 @@ int windowFillRect(window_typedef* window,unsigned char x, unsigned char y, unsi
 	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
 }
 
-int windowInvertArea(window_typedef* window,unsigned char x, unsigned char y, unsigned char w, unsigned char h)
+int windowFillRect(window_typedef * window, unsigned char x, unsigned char y,
+				   unsigned char w, unsigned char h)
+{
+	int i, j, rv;
+	// stupidest version - just pixels - but fast with internal buffer!
+	for (i = x; i < x + w; i++)
+	{
+		for (j = y; j < y + h; j++)
+		{
+			rv = windowDrawPixel(window, i, j);
+			if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
+				return rv;
+		}
+	}
+	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
+}
+
+int windowInvertArea(window_typedef * window, unsigned char x, unsigned char y,
+					 unsigned char w, unsigned char h)
 {
 	int i, j, rv;
 	// stupidest version - just pixels - but fast with internal buffer!
@@ -323,7 +354,7 @@ int windowInvertArea(window_typedef* window,unsigned char x, unsigned char y, un
 	{
 		for (j = y; j < (y + h); j++)
 		{
-			rv =windowInvertPixel(window, i, j);
+			rv = windowInvertPixel(window, i, j);
 			if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 				return rv;
 		}
@@ -331,12 +362,15 @@ int windowInvertArea(window_typedef* window,unsigned char x, unsigned char y, un
 	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
 }
 
-int windowClearRect(window_typedef* window,unsigned char x, unsigned char y, unsigned char w, unsigned char h)
+int windowClearRect(window_typedef * window, unsigned char x, unsigned char y,
+					unsigned char w, unsigned char h)
 {
 	int i, j, rv;
 	// stupidest version - just pixels - but fast with internal buffer!
-	for (i=x; i<x+w; i++) {
-		for (j=y; j<y+h; j++) {
+	for (i = x; i < x + w; i++)
+	{
+		for (j = y; j < y + h; j++)
+		{
 			rv = windowClearPixel(window, i, j);
 			if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 				return rv;
@@ -345,39 +379,45 @@ int windowClearRect(window_typedef* window,unsigned char x, unsigned char y, uns
 	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
 }
 
-int windowDrawRect(window_typedef* window,unsigned char x, unsigned char y, unsigned char w, unsigned char h)
+int windowDrawRect(window_typedef * window, unsigned char x, unsigned char y,
+				   unsigned char w, unsigned char h)
 {
 	int i, rv;
 	// stupidest version - just pixels - but fast with internal buffer!
-	for (i=x; i<x+w; i++) {
-		rv =windowDrawPixel(window,i, y);
+	for (i = x; i < x + w; i++)
+	{
+		rv = windowDrawPixel(window, i, y);
 		if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 			return rv;
-		rv =windowDrawPixel(window,i, y+h-1);
+		rv = windowDrawPixel(window, i, y + h - 1);
 		if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 			return rv;
 	}
-	for (i=y; i<y+h; i++) {
-		rv =windowDrawPixel(window,x, i);
+	for (i = y; i < y + h; i++)
+	{
+		rv = windowDrawPixel(window, x, i);
 		if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 			return rv;
-		rv =windowDrawPixel(window,x+w-1, i);
+		rv = windowDrawPixel(window, x + w - 1, i);
 		if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 			return rv;
 	}
 	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
 }
 
-int windowDrawDashedLine(window_typedef* window,unsigned char x0, unsigned char y0, unsigned char x1, unsigned char y1)
+int windowDrawDashedLine(window_typedef * window, unsigned char x0,
+						 unsigned char y0, unsigned char x1, unsigned char y1)
 {
-	int rv ;
+	int rv;
 	uint8_t steep = abs(y1 - y0) > abs(x1 - x0);
-	if (steep) {
+	if (steep)
+	{
 		swap(x0, y0);
 		swap(x1, y1);
 	}
 
-	if (x0 > x1) {
+	if (x0 > x1)
+	{
 		swap(x0, x1);
 		swap(y0, y1);
 	}
@@ -389,31 +429,38 @@ int windowDrawDashedLine(window_typedef* window,unsigned char x0, unsigned char 
 	int8_t err = dx / 2;
 	int8_t ystep;
 
-	if (y0 < y1) {
+	if (y0 < y1)
+	{
 		ystep = 1;
-	} else {
-		ystep = -1;}
+	}
+	else
+	{
+		ystep = -1;
+	}
 
-	for (; x0<x1; x0++) {
+	for (; x0 < x1; x0++)
+	{
 		if (steep)
 		{
 			if ((x0 % 2) == 0)
 			{
-				rv =windowDrawPixel(window, y0, x0);
+				rv = windowDrawPixel(window, y0, x0);
 				if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 					return rv;
 			}
-		} else
+		}
+		else
 		{
 			if ((x0 % 2) == 0)
 			{
-				rv =windowDrawPixel(window,x0, y0);
+				rv = windowDrawPixel(window, x0, y0);
 				if (rv != WINDOWS_MANAGER_DRIVER_E_SUCCESS)
 					return rv;
 			}
 		}
 		err -= dy;
-		if (err < 0) {
+		if (err < 0)
+		{
 			y0 += ystep;
 			err += dx;
 		}
@@ -421,16 +468,19 @@ int windowDrawDashedLine(window_typedef* window,unsigned char x0, unsigned char 
 	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
 }
 
-int windowDrawLine(window_typedef* window,unsigned char x0, unsigned char y0, unsigned char x1, unsigned char y1)
+int windowDrawLine(window_typedef * window, unsigned char x0, unsigned char y0,
+				   unsigned char x1, unsigned char y1)
 {
 	int rv;
 	uint8_t steep = abs(y1 - y0) > abs(x1 - x0);
-	if (steep) {
+	if (steep)
+	{
 		swap(x0, y0);
 		swap(x1, y1);
 	}
 
-	if (x0 > x1) {
+	if (x0 > x1)
+	{
 		swap(x0, x1);
 		swap(y0, y1);
 	}
@@ -442,12 +492,17 @@ int windowDrawLine(window_typedef* window,unsigned char x0, unsigned char y0, un
 	int8_t err = dx / 2;
 	int8_t ystep;
 
-	if (y0 < y1) {
+	if (y0 < y1)
+	{
 		ystep = 1;
-	} else {
-		ystep = -1;}
+	}
+	else
+	{
+		ystep = -1;
+	}
 
-	for (; x0<x1; x0++) {
+	for (; x0 < x1; x0++)
+	{
 		if (steep)
 		{
 			rv = windowDrawPixel(window, y0, x0);
@@ -461,7 +516,8 @@ int windowDrawLine(window_typedef* window,unsigned char x0, unsigned char y0, un
 				return rv;
 		}
 		err -= dy;
-		if (err < 0) {
+		if (err < 0)
+		{
 			y0 += ystep;
 			err += dx;
 		}
@@ -469,7 +525,8 @@ int windowDrawLine(window_typedef* window,unsigned char x0, unsigned char y0, un
 	return WINDOWS_MANAGER_DRIVER_E_SUCCESS;
 }
 
-int windowProgressBar(window_typedef* window,unsigned char x, unsigned char y, unsigned char state)
+int windowProgressBar(window_typedef * window, unsigned char x,
+					  unsigned char y, unsigned char state)
 {
 	int rv;
 	windowDrawRect(window, x, y, 104, 8);
