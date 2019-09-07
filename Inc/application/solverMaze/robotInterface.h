@@ -9,7 +9,7 @@
 #define ROBOTINTERFACE_H_
 
 //#define DEBUG_ROBOT_INTERFACE
-//#define PRINT_CELL_STATE
+#define PRINT_CELL_STATE
 //#define PRINT_CELL_STATE_BLEUTOOTH
 
 #include "application/solverMaze/solverMaze.h"
@@ -32,5 +32,7 @@ int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
 int loadMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_coordinate);
 int test_move_zhonx ();
 int test_maze_flash ();
+
+extern positionRobot *pt_zhonx_position;
 
 #endif /* ROBOTINTERFACE_H_ */

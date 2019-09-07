@@ -44,6 +44,7 @@ int maze_solver_new_maze(void)
     positionRobot zhonx_position, start_position;
     labyrinthe maze;
     unsigned int explorationTime;
+    pt_zhonx_position = &zhonx_position;
 
     memset(&end_coordinate, 0, sizeof(coordinate));
     memset(&zhonx_position, 0, sizeof(positionRobot));
@@ -58,13 +59,12 @@ int maze_solver_new_maze(void)
     zhonx_position.coordinate_robot.y = 8; // the robot start in the center of the maze
     zhonx_position.robot_direction = north;
     /*end of initialization for nime micromouse competition*/
-    zhonx_position.midOfCell = TRUE;
-    memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
-    start_position.robot_direction += 2;
-    start_position.robot_direction = start_position.robot_direction % 4;
+    zhonx_position.midOfCell = FALSE;
+    memcpy(&start_position, &zhonx_position, sizeof(zhonx_position));
+    start_position.robot_direction = (start_position.robot_direction + 2) % 4;
     start_position.midOfCell = FALSE;
-    //newCell(ask_cell_state(), &maze, start_position);
     newCell((walls){WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE}, &maze, start_position);
+    printLength(maze, zhonx_position.coordinate_robot.x, zhonx_position.coordinate_robot.y);
     memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
 
     #ifdef PRINT_BLUETOOTH_MAZE_DURING_RUN
@@ -876,60 +876,87 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
 
 void printLength(const labyrinthe maze, const int x_robot, const int y_robot)
 {
-    char maze_str [3011]= "";
-    sprintf(maze_str,"zhonx : %d; %d\n  ", x_robot, y_robot);
-    for (int i = 0; i < MAZE_SIZE; i++)
+    bluetoothPrintf("zhonx : %d; %d\n  ", x_robot, y_robot);
+    for (int x = 0; x < MAZE_SIZE; x++)
 	{
-	 sprintf(maze_str,"%s%5d", maze_str, i);
+    	bluetoothPrintf("%6d", x);
 	}
-	sprintf(maze_str,"%s\n", maze_str);
-	for (int i = 0; i < MAZE_SIZE; i++)
+    bluetoothPrintf("\n");
+	for (int y = 0; y < MAZE_SIZE; y++)
 	{
-	 sprintf(maze_str,"%s    ", maze_str);
-	  for (int j = 0; j < MAZE_SIZE; j++)
+		bluetoothPrintf("    ");
+		for (int x = 0; x < MAZE_SIZE; x++)
+		{
+		  switch (maze.cell[x][y].wall_north) {
+			case NO_KNOWN:
+				  bluetoothPrintf("+- - +");
+				break;
+			case WALL_PRESENCE:
+				  bluetoothPrintf("+----+");
+				break;
+			default:
+				  bluetoothPrintf("+    +");
+				break;
+		}
+	  }
+	  bluetoothPrintf("\n %2d ", y);
+	  for (int x = 0; x < MAZE_SIZE; x++)
 	  {
-		  if (maze.cell[j][i].wall_north == NO_KNOWN)
+		  switch (maze.cell[x][y].wall_west)
 		  {
-			 sprintf(maze_str,"%s- - +", maze_str);
+		  	  case NO_KNOWN:
+				  bluetoothPrintf("!");
+		  		  break;
+		  	  case WALL_PRESENCE:
+		  		  bluetoothPrintf("|");
+		  		  break;
+		  	  default:
+				  bluetoothPrintf(" ");
+				  break;
+
 		  }
-		  else if (maze.cell[j][i].wall_north == WALL_PRESENCE)
+		  if (maze.cell[x][y].length != INFINITY_WEIGHT)
 		  {
-			 sprintf(maze_str,"%s----+", maze_str);
+			  bluetoothPrintf("%4d", maze.cell[x][y].length);
 		  }
 		  else
 		  {
-			 sprintf(maze_str,"%s    +", maze_str);
+			  bluetoothPrintf("+OO ");
+		  }
+		  switch (maze.cell[x][y].wall_east)
+		  {
+		  	  case NO_KNOWN:
+				  bluetoothPrintf("!");
+		  		  break;
+		  	  case WALL_PRESENCE:
+		  		  bluetoothPrintf("|");
+		  		  break;
+		  	  default:
+				  bluetoothPrintf(" ");
+				  break;
+
 		  }
 	  }
-	 sprintf(maze_str,"%s\n %2d ",maze_str, i);
-	  for (int j = 0; j < MAZE_SIZE; j++)
+	  bluetoothPrintf("\n");
+	  bluetoothPrintf("    ");
+	  for (int x = 0; x < MAZE_SIZE; x++)
 	  {
-		  if (maze.cell[j][i].length != INFINITY_WEIGHT)
-		  {
-			 sprintf(maze_str,"%s%4d", maze_str, maze.cell[j][i].length);
-		  }
-		  else
-		  {
-			 sprintf(maze_str,"%s+OO ", maze_str);
-		  }
-		  if (maze.cell[j][i].wall_east == NO_KNOWN)
-		  {
-			 sprintf(maze_str,"%s!", maze_str);
-		  }
-		  else if (maze.cell[j][i].wall_east == WALL_PRESENCE)
-		  {
-			 sprintf(maze_str,"%s|", maze_str);
-		  }
-		  else
-		  {
-			 sprintf(maze_str,"%s ", maze_str);
-		  }
+		  switch (maze.cell[x][y].wall_south) {
+			case NO_KNOWN:
+				  bluetoothPrintf("+- - +");
+				break;
+			case WALL_PRESENCE:
+				  bluetoothPrintf("+----+");
+				break;
+			default:
+				  bluetoothPrintf("+    +");
+				break;
+		}
 	  }
-	 sprintf(maze_str,"%s\n", maze_str);
+	  bluetoothPrintf("\n");
 	}
-	sprintf(maze_str,"%s\n", maze_str);
+	bluetoothPrintf("\n");
     bluetoothWaitReady();
-    bluetoothPrintf("%s", maze_str);
 }
 
 void clearMazelength(labyrinthe* maze)

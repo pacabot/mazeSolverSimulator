@@ -13,7 +13,7 @@
 #include "peripherals/expander/pcf8574.h"
 #include "middleware/settings/settings.h"
 #include "middleware/wall_sensors/wall_sensors.h"
-#include "SDL/SDL.h"
+#include <SDL2/SDL.h>
 #ifdef __cplusplus
     #include <cstdlib>
 #else
@@ -100,7 +100,7 @@ int waitValidation(unsigned long timeout)
 
 void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
-#ifdef DEBUG
+#ifdef PRINT_CELL_STATE
 	print_cell_state(new_walls);
 	ssd1306Refresh();
 	/*end print wall position*/
@@ -284,6 +284,47 @@ void waitStart()
     ssd1306ClearRect(SSD1306_LCDWIDTH / 2, 10, SSD1306_LCDWIDTH / 2,
             SSD1306_LCDHEIGHT);
     ssd1306Refresh();
+}
+
+void print_cell_state (walls cell_state)
+{
+    #ifdef PRINT_WALLS_DETECTED
+    ssd1306ClearRect(64,DISPLAY_OFFSET,54,5);
+    ssd1306ClearRect(64,DISPLAY_OFFSET,5,54);
+    ssd1306ClearRect(113,DISPLAY_OFFSET,5,54);
+
+    if (cell_state.front == WALL_PRESENCE)
+    {
+        ssd1306FillRect(64,DISPLAY_OFFSET,54,5);
+    }
+    if (cell_state.left == WALL_PRESENCE)
+    {
+        ssd1306FillRect(64,DISPLAY_OFFSET,5,54);
+    }
+    if (cell_state.right == WALL_PRESENCE)
+    {
+        ssd1306FillRect(113,DISPLAY_OFFSET,5,54);
+    }
+    #endif
+    #ifdef PRINT_CELL_STATE_BLEUTOOTH
+    if (cell_state.front == WALL_PRESENCE)
+    {
+        bluetoothPrintf("_");
+    }
+    if (cell_state.left == WALL_PRESENCE)
+    {
+        bluetoothPrintf("|");
+    }
+    else
+    {
+        bluetoothPrintf(" ");
+    }
+    if (cell_state.right == WALL_PRESENCE)
+    {
+        bluetoothPrintf("|");
+    }
+    bluetoothPrintf("\n");
+    #endif
 }
 
 int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_coordinate)

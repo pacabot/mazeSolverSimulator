@@ -34,13 +34,9 @@
 enum direction
 {
   north      = 0, /*!< front to the north               */
-  north_east = 1, /*!< front to the diagonal north east */
-  east       = 2, /*!< front to the east                */
-  south_east = 3, /*!< front to the diagonal south east */
-  south      = 4, /*!< front to the south               */
-  south_west = 5, /*!< front to the diagonal south east */
-  west       = 6, /*!< front to the west                */
-  north_west = 7, /*!< front to the diagonal north east */
+  east       = 1, /*!< front to the east                */
+  south      = 2, /*!< front to the south               */
+  west       = 3, /*!< front to the west                */
 };
 
 /**
@@ -53,13 +49,9 @@ enum direction
 enum orientation
 {
   forward  = 0, /*!< straight                   */
-  right45  = 1, /*!< start diag right move      */
-  right    = 2, /*!< right turn                 */
-  right135 = 3, /*!< start diag right back move */
-  uturn    = 4, /*!< uturn                      */
-  left135  = 5, /*!< start diag left back move  */
-  left     = 6, /*!< left turn                  */
-  left45   = 7  /*!< start diag left move       */
+  right    = 1, /*!< right turn                 */
+  uturn    = 2, /*!< uturn                      */
+  left     = 3, /*!< left turn                  */
 };
 
 //wall state define
